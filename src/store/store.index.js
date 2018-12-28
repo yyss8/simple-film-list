@@ -36,22 +36,8 @@ const globalReducer  = ( global = {}, action ) =>{
     return global;
 };
 
-const userReducer = (user = {}, action) =>{
-
-    switch ( action.type ){
-        case 'USER_LOGIN':
-            return action.user;
-        case 'USER_LOGOUT':
-            return null;
-    }
-
-    return user;
-
-}
-const user = localStorage.getItem('user');
 
 const initialStates = {
-    user: !!user ? JSON.parse( user ):null ,
     global:{
         isPageLoaded:false,
         pageLoadingPerc:0,
@@ -61,8 +47,7 @@ const initialStates = {
 
 export default {
     reducers:{
-        global:globalReducer,
-        user:userReducer
+        global:globalReducer
     },
     initialStates
 };

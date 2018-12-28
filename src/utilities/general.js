@@ -14,7 +14,7 @@ export const objToQs = obj => {
  * @description
  * determine is object is empty
  */
-export const isObjEmpty = obj => {
+export const isEmptyObject = obj => {
     for (let x in obj) { return false; }
     return true;
 }

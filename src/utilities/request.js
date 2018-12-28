@@ -1,4 +1,6 @@
 import qs from 'qs';
+import { isEmptyObject } from './general';
+import axios from 'axios';
 
 export const getJson = (body, url, params = {}) =>{
     return fetchJson( body, url, 'GET', params );
@@ -31,24 +33,41 @@ export const patchJson = (body, url, params = {}) => {
  */
 const fetchJson = (body = {}, url = '', method = 'GET', params = {}) =>{
 
-    let headers = {
+    const { headers = {}, ..._params } = params;
+
+    let _headers = Object.assign({
         "Content-Type": "application/json; charset=utf-8"
-    };
-    if ( params.headers ){
-        headers = Object.assign({}, headers, params.headers);
-        delete params.headers;
-    }
-    const _url = method === 'GET' ? `${url}?${qs.stringify( body )}` : url;
+    }, headers);
+
+    const hasBody = !isEmptyObject( body );
+
+    const _url = method === 'GET' && hasBody ? `${url}?${qs.stringify( body )}` : url;
     let fetchParams = {
+        url:_url,
         method,
-        headers,
-        ...params
+        headers:_headers,
+        ..._params
     };
-
-    //fetch is not allowing data to be stored in body for GET requests
-    if ( method !== 'GET' ){
-        fetchParams.body = JSON.stringify( body );
+ 
+    if ( hasBody && method !== 'GET' ){
+        fetchParams.data = body;
     }
 
-    return fetch(_url, fetchParams).then( res=>res.json() );
+    return new Promise( (resolve, reject) =>{
+        axios
+        .request( fetchParams )
+        .then( ({ data }) =>{
+            resolve(data)
+        })
+        .catch( rejected =>{
+
+            if ( rejected.response && rejected.response.status === 400 ){
+                resolve(rejected.response.data);
+            }else if ( rejected.message ){
+                reject( rejected.message );
+            }
+            else 
+            reject(rejected.response);
+        });
+    });;
 }

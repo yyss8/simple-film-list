@@ -9,7 +9,6 @@ module.exports = (env, options) =>{
 
     const onProd = options.mode === 'production'; 
     const publicPath = '/';
-    const API_URL = 'http://www.snagfilms.com/apis/films.json';
 
     const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
         template: './src/index.html',
@@ -23,15 +22,14 @@ module.exports = (env, options) =>{
         HtmlWebpackPluginConfig,
         new webpack.DefinePlugin({
             PUBLIC:JSON.stringify( publicPath ),
-            API_URL:JSON.stringify( API_URL ),
             __VERSION__: JSON.stringify(require('./package.json').version),
             'process.env': {
                 'NODE_ENV': JSON.stringify(options.mode)
             }
         }),
         new MiniCssExtractPlugin({
-            filename: onProd ? "styles/[name].[hash].css":"[name].css",
-            chunkFilename: onProd ? "styles/[id].[hash].css":"[id].css"
+            filename: onProd ? "sk/styles/[name].[hash].css":"[name].css",
+            chunkFilename: onProd ? "sk/styles/[id].[hash].css":"[id].css"
         })
     ];
     
@@ -178,7 +176,7 @@ module.exports = (env, options) =>{
         output: {
             path:path.resolve(__dirname, './final'),
             publicPath,
-            filename:  onProd ? 'build/m/[name].[chunkhash].js':'build/bundle.js'
+            filename:  onProd ? 'sk/build/m/[name].[chunkhash].js':'build/bundle.js'
         },
         module: {
             rules: moduleLoaders
